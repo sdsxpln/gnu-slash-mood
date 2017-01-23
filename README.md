@@ -116,7 +116,7 @@ Note that you will need to have avahi/mDNS configured on your system to be able 
 ``` bash
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get -y install build-essential git curl libcurl4-openssl-dev
+sudo apt-get -y install build-essential git curl libcurl4-openssl-dev ntp
 git clone https://github.com/bashrc/libbbb
 git clone https://github.com/bashrc/libgnusocial
 git clone https://github.com/bashrc/gnu-slash-mood
