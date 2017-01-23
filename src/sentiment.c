@@ -323,7 +323,7 @@ int read_trigger_words(char * str)
             for (i = 0; i < strlen(linestr); i++)
                 if ((linestr[i] != 10) && (linestr[i] != 13) &&
                     (linestr[i] != ' ') && (linestr[i] != ','))
-                    custom_trigger_word[j++] = linestr[i];
+                    custom_trigger_word[j++] = tolower(linestr[i]);
 
             /* string terminator */
             custom_trigger_word[j] = 0;
