@@ -200,7 +200,7 @@ You can customise the words which cause GNU/Mood to pulsate.
 
 ``` bash
 ssh debian@beaglebone.local
-sudo nano /var/lib/triggers.txt
+sudo nano /var/lib/gnu-slash-mood/triggers.txt
 ```
 
 An example *triggers.txt* file might look like:
