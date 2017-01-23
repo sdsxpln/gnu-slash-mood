@@ -29,6 +29,14 @@ Bill of Materials
     1 x Small amount of bubble wrap packing plastic
     1 x Superglue
 
+Tools
+=====
+
+    Precision screwdrivers
+    Junior hacksaw
+    Pliers
+    Drill
+
 Wiring
 ======
 
