@@ -27,6 +27,7 @@ Bill of Materials
     1 x LED Mood Ball Lamp
     1 x microSD card (8GB or larger, class 10)
     1 x Small amount of bubble wrap packing plastic
+    1 x Superglue
 
 Wiring
 ======
