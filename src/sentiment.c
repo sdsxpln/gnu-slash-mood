@@ -301,7 +301,7 @@ int get_gender(char * str)
 }
 
 /**
- * @brief Reads triggers from a custom file /var/lib/gnu-slash-mood/triggers.txt
+ * @brief Reads triggers from a custom file /var/lib/triggers.txt
  * @param str The text to be analysed
  * @return Zero or greater trigger word detections, -1 if the file doesn't exist
  */
@@ -311,7 +311,7 @@ int read_trigger_words(char * str)
     char linestr[256], custom_trigger_word[256], word[256];
     int i, j, ctr=0, trigger=0;
 
-    fp = fopen("/var/lib/gnu-slash-mood/triggers.txt", "r");
+    fp = fopen("/var/lib/triggers.txt", "r");
     if (!fp) return -1;
 
     while (!feof(fp)) {

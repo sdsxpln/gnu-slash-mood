@@ -190,3 +190,23 @@ And if you are using *~/.ssh/authorized_keys* then set:
     PasswordAuthentication no
 
 Save and reboot the Beaglebone.
+
+Custom Trigger Words
+====================
+
+You can customise the words which cause GNU/Mood to pulsate.
+
+``` bash
+ssh debian@beaglebone.local
+sudo nano /var/lib/triggers.txt
+```
+
+An example *triggers.txt* file might look like:
+
+``` text
+stallman
+systemd
+DRM
+#NSFW
+proprietary
+```
