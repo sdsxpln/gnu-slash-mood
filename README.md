@@ -134,11 +134,13 @@ sudo mkdir /var/lib/gnu-slash-mood
 sudo nano /var/lib/gnu-slash-mood/config.txt
 ```
 
-Add the following, setting your details as needed:
+Add the following, setting your details as needed. The *off* and *on* values are the hours of the day when GNU/Mood should turn off and then turn on again so as not to disturb sleep (0 is midnight).
 
     username = [myusername]
     password = [password]
     domain = [GNU Social domain]
+    off = 0
+    on = 7
 
 Now enable the daemon:
 

@@ -17,6 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <time.h>
 #include "gnu-slash-mood.h"
 
 /* The maximum number of characters obtained from the timeline */
@@ -36,6 +37,10 @@ char gnusocial_username[512];
 char gnusocial_password[512];
 char gnusocial_domain_name[512];
 
+/* time to turn off and on again */
+unsigned char hour_off = 0;
+unsigned char hour_on = 7;
+
 struct gss_account acc;
 
 /**
@@ -51,7 +56,33 @@ void show_help()
     printf(" -p --password [text]   Password\n\n");
     printf(" -t --test              Test mode\n");
     printf(" -c --config [filename] Read login details from file\n");
+    printf("    --off [hour]        Hour when to turn off\n");
+    printf("    --on [hour]         Hour when to turn on\n");
     printf("    --debug             Enable debugging output\n\n");
+}
+
+/**
+ * @brief Returns 1 if the mood ball should be active
+ */
+int is_active()
+{
+    int state = 1;
+    time_t t = time(NULL);
+    struct tm *tmp = gmtime(&t);
+
+    if (hour_off > hour_on) {
+        if ((int)tmp->tm_hour > (int)hour_off)
+            state = 0;
+        if ((int)tmp->tm_hour < (int)hour_on)
+            state = 0;
+    }
+    else {
+        if (((int)tmp->tm_hour > (int)hour_off) &&
+            ((int)tmp->tm_hour < (int)hour_on))
+            state = 0;
+    }
+
+    return state;
 }
 
 /**
@@ -133,6 +164,24 @@ int read_login_credentials(char * config_filename)
                     return 4;
                 sprintf(gnusocial_domain_name, "%s", paramstr);
             }
+
+            if ((strstr(linestr,"off =") != NULL) ||
+                (strstr(linestr,"off :") != NULL) ||
+                (strstr(linestr,"off:") != NULL) ||
+                (strstr(linestr,"off=") != NULL)) {
+                if (read_login_param(linestr, paramstr) != 0)
+                    return 5;
+                hour_off = (unsigned char)atoi(paramstr);
+            }
+
+            if ((strstr(linestr,"on =") != NULL) ||
+                (strstr(linestr,"on :") != NULL) ||
+                (strstr(linestr,"on:") != NULL) ||
+                (strstr(linestr,"on=") != NULL)) {
+                if (read_login_param(linestr, paramstr) != 0)
+                    return 6;
+                hour_on = (unsigned char)atoi(paramstr);
+            }
         }
     }
 
@@ -141,7 +190,7 @@ int read_login_credentials(char * config_filename)
     if ((strlen(gnusocial_username) == 0) ||
         (strlen(gnusocial_password) == 0) ||
         (strlen(gnusocial_domain_name) == 0))
-        return 5;
+        return 7;
 
     return 0;
 }
@@ -205,6 +254,13 @@ int mood_loop()
     }
 
     while(1) {
+        if (is_active() == 0) {
+            /* fade out */
+            target_r = 0;
+            target_g = 0;
+            target_b = 0;
+        }
+
         /* shift the colour towards the target */
         if (target_r > curr_r) curr_r++;
         if (target_g > curr_g) curr_g++;
@@ -243,15 +299,17 @@ int mood_loop()
         if (ctr_msec >= CHECK_TIMELINE_SEC*1000) {
             ctr_msec = 0;
 
-            /* update the timeline */
-            if (get_timeline_text(text) != 0) {
-                printf("Failed to grab text from the timeline\n");
-            }
-            else {
-                /* calculate the new target colour */
-                sentiment_to_rgb(text, &target_r, &target_g, &target_b, &frequency);
-                if (debug != 0)
-                    printf(">>>> Updated from timeline <<<<\n");
+            if (is_active() == 1) {
+                /* update the timeline */
+                if (get_timeline_text(text) != 0) {
+                    printf("Failed to grab text from the timeline\n");
+                }
+                else {
+                    /* calculate the new target colour */
+                    sentiment_to_rgb(text, &target_r, &target_g, &target_b, &frequency);
+                    if (debug != 0)
+                        printf(">>>> Updated from timeline <<<<\n");
+                }
             }
         }
 
@@ -336,6 +394,18 @@ int main(int argc, char *argv[])
                     printf("Invalid configuration file\n");
                     return 4;
                 }
+                i++;
+                continue;
+            }
+
+            if (strcmp(argv[i], "--off") == 0) {
+                hour_off = (unsigned char)atoi(argv[i+1]);
+                i++;
+                continue;
+            }
+
+            if (strcmp(argv[i], "--on") == 0) {
+                hour_on = (unsigned char)atoi(argv[i+1]);
                 i++;
                 continue;
             }
