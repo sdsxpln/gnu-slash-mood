@@ -21,6 +21,8 @@
 
 /* Note: All words should be in lower case */
 
+/* default trigger words */
+
 char * trigger_word_en[] = {
     "gnusocial", "mastodon", "stallman", "postactiv", "signal", "linux", "libreboot", "#nsfw",
     NULL
@@ -295,10 +297,74 @@ int get_gender(char * str)
     return gender;
 }
 
+/**
+ * @brief Reads triggers from a custom file /var/lib/gnu-slash-mood/triggers.txt
+ * @param str The text to be analysed
+ * @return Zero if the file was read
+ */
+int read_trigger_words(char * str)
+{
+    FILE * fp;
+    char linestr[256], custom_trigger_word[256], word[256];
+    int i, j, ctr=0, trigger=0;
+
+    fp = fopen("/var/lib/gnu-slash-mood/triggers.txt", "r");
+    if (!fp) return 1;
+
+    while (!feof(fp)) {
+        if (fgets(linestr , 254 , fp) != NULL ) {
+            if (strlen(linestr) == 0) continue;
+
+            /* extract the trigger word */
+            j = 0;
+            for (i = 0; i < strlen(linestr); i++)
+                if ((linestr[i] != 10) && (linestr[i] != 13) &&
+                    (linestr[i] != ' ') && (linestr[i] != ','))
+                    custom_trigger_word[j++] = linestr[i];
+
+            /* string terminator */
+            custom_trigger_word[j] = 0;
+
+            /* is the trigger word within the text? */
+            ctr = 0;
+            for (i = 0; i < strlen(str); i++) {
+                if ((terminating_char(str[i]) == 1) || (i == strlen(str)-1)) {
+                    if (i == strlen(str)-1)
+                        word[ctr++] = tolower(str[i]);
+                    if (ctr > 0) {
+                        /* string terminator */
+                        word[ctr] = 0;
+                        if (strlen(word) > 1) {
+                            if (strlen(word) == strlen(custom_trigger_word)) {
+                                if (strcmp(word, custom_trigger_word) == 0) {
+                                    trigger++;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    ctr = 0;
+                }
+                else {
+                    if (ctr < 255)
+                        word[ctr++] = tolower(str[i]);
+                }
+            }
+
+        }
+    }
+
+    fclose(fp);
+    return 0;
+}
+
 int get_triggers(char * str)
 {
     int i, j, ctr=0, trigger=0;
     char word[256];
+
+    /* if custom trigger words exist then read them */
+    if (read_trigger_words(str) == 0) return 0;
 
     for (i = 0; i < strlen(str); i++) {
         if (terminating_char(str[i]) == 1) {
