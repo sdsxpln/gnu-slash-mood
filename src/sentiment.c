@@ -436,7 +436,7 @@ void sentiment_to_rgb(char * str, int * r, int * g, int * b,
     int gender = get_gender(str);
     int triggers = get_triggers(str);
 
-    int max = valence;
+    int max = abs(valence);
     const int maxval = 500;
 
     /* get the maximum value */
