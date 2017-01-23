@@ -160,7 +160,8 @@ int get_valence(char * str)
             ctr = 0;
         }
         else {
-            word[ctr++] = tolower(str[i]);
+            if (ctr < 254)
+                word[ctr++] = tolower(str[i]);
         }
     }
 
@@ -209,7 +210,8 @@ int get_egocentrism(char * str)
             ctr = 0;
         }
         else {
-            word[ctr++] = tolower(str[i]);
+            if (ctr < 254)
+                word[ctr++] = tolower(str[i]);
         }
     }
 
@@ -267,7 +269,8 @@ int get_gender(char * str)
             ctr = 0;
         }
         else {
-            word[ctr++] = tolower(str[i]);
+            if (ctr < 254)
+                word[ctr++] = tolower(str[i]);
         }
     }
 
@@ -387,7 +390,8 @@ int get_triggers(char * str)
             ctr = 0;
         }
         else {
-            word[ctr++] = tolower(str[i]);
+            if (ctr < 254)
+                word[ctr++] = tolower(str[i]);
         }
     }
 
