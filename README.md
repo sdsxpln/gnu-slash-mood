@@ -9,7 +9,7 @@ GNU/Mood is a mood ball hack where the colour LEDs are controlled by sentiment a
  - Valence: An indicator of positive or negative affect. Happyness or sadness.
  - Gender: Feminine or masculine related words or names
 
-These measures are then turned into LED illumination values to produce the colour of the ball, which changes slowly and almost imperceptably.
+These measures are then turned into LED illumination values to produce the colour of the ball, which changes slowly and almost imperceptibly.
 
 GNU/Mood can also be "triggered" if it detects certain key words within the timeline. This causes it to pulsate slowly and soothingly, guiding the user into a more blissful state of mind.
 
