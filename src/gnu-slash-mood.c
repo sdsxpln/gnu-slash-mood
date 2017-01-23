@@ -287,8 +287,8 @@ int mood_loop()
         }
 
         if (debug != 0)
-            printf("Colour: %d %d %d  Intensity: %d  Frequency: %d\n",
-                   curr_r, curr_g, curr_b, intensity, frequency);
+            printf("Active: %d  Colour: %d %d %d  Intensity: %d  Frequency: %d\n",
+                   is_active(), curr_r, curr_g, curr_b, intensity, frequency);
 
         if (set_leds(curr_r*intensity/100,
                      curr_g*intensity/100,
