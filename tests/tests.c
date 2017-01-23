@@ -56,7 +56,7 @@ void test_gender()
 void test_gender_name()
 {
     char * text_feminine = "Anne read a book";
-    char * text_masculine = "Bob mate the tea";
+    char * text_masculine = "Bob made the tea";
 
     set_language("en");
     assert(get_gender(text_feminine) > 0);
