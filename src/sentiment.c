@@ -303,7 +303,7 @@ int get_gender(char * str)
 /**
  * @brief Reads triggers from a custom file /var/lib/gnu-slash-mood/triggers.txt
  * @param str The text to be analysed
- * @return Zero or greater trigger detections, -1 if the file doesn't exist
+ * @return Zero or greater trigger word detections, -1 if the file doesn't exist
  */
 int read_trigger_words(char * str)
 {
@@ -349,7 +349,7 @@ int read_trigger_words(char * str)
                     ctr = 0;
                 }
                 else {
-                    if (ctr < 255)
+                    if (ctr < 254)
                         word[ctr++] = tolower(str[i]);
                 }
             }
@@ -361,6 +361,11 @@ int read_trigger_words(char * str)
     return trigger;
 }
 
+/**
+ * @brief Returns the number of trigger words found
+ * @param str The text to be analysed
+ * @return Number of matching trigger words
+ */
 int get_triggers(char * str)
 {
     int i, j, ctr=0, trigger=0, retval;
