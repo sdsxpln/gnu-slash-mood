@@ -169,3 +169,24 @@ Fit the top of the case to the bottom, then place the mood ball over the LEDs. C
 Glue the mood ball to the top of the case with some superglue.
 
 GNU/Mood is now ready for moodyness.
+
+Security Tips
+=============
+
+Everyone is paranoid about the *internet of hopelessly insecure things*. To improve the security of GNU/Mood you can do the following:
+
+``` bash
+ssh debian@beaglebone.local
+sudo nano /etc/ssh/sshd_config
+```
+
+Set the following:
+
+    PermitRootLogin no
+    PermitEmptyPasswords no
+
+And if you are using *~/.ssh/authorized_keys* then set:
+
+    PasswordAuthentication no
+
+Save and reboot the Beaglebone.
