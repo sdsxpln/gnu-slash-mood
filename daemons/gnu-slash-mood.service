@@ -1,0 +1,16 @@
+[Unit]
+Description=GNU/Mood
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/var/lib/gnu-slash-mood
+ExecStart=/usr/local/bin/gnu-slash-mood -c /var/lib/gnu-slash-mood/config.txt
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
