@@ -77,7 +77,7 @@ int is_active()
             state = 0;
     }
     else {
-        if (((int)tmp->tm_hour > (int)hour_off) &&
+        if (((int)tmp->tm_hour >= (int)hour_off) &&
             ((int)tmp->tm_hour < (int)hour_on))
             state = 0;
     }
