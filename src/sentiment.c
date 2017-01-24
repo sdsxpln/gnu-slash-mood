@@ -143,7 +143,12 @@ int get_valence(char * str)
     char word[256];
 
     for (i = 0; i < strlen(str); i++) {
-        if (terminating_char(str[i]) == 1) {
+        if ((terminating_char(str[i]) == 1) || (i == strlen(str)-1)) {
+
+            /* final word */
+            if ((i == strlen(str)-1) && (terminating_char(str[i]) != 1))
+                word[ctr++] = tolower(str[i]);
+
             if (ctr > 1) {
                 word[ctr] = 0;
                 j = 0;
@@ -165,20 +170,6 @@ int get_valence(char * str)
         }
     }
 
-    if (ctr > 1) {
-        word[ctr] = 0;
-        j = 0;
-        while (sentiment_lang[j] != NULL) {
-            if (strlen(word) == strlen(sentiment_lang[j])) {
-                if (strcmp(word, sentiment_lang[j]) == 0) {
-                    valence += sentiment_valence[j];
-                    break;
-                }
-            }
-            j++;
-        }
-    }
-
     return valence;
 }
 
@@ -193,7 +184,12 @@ int get_egocentrism(char * str)
     char word[256];
 
     for (i = 0; i < strlen(str); i++) {
-        if (terminating_char(str[i]) == 1) {
+        if ((terminating_char(str[i]) == 1) || (i == strlen(str)-1)) {
+
+            /* final word */
+            if ((i == strlen(str)-1) && (terminating_char(str[i]) != 1))
+                word[ctr++] = tolower(str[i]);
+
             if (ctr > 0) {
                 word[ctr] = 0;
                 j = 0;
@@ -215,20 +211,6 @@ int get_egocentrism(char * str)
         }
     }
 
-    if (ctr > 0) {
-        word[ctr] = 0;
-        j = 0;
-        while (egocentrism_lang[j] != NULL) {
-            if (strlen(word) == strlen(egocentrism_lang[j])) {
-                if (strcmp(word, egocentrism_lang[j]) == 0) {
-                    egocentrism += egocentrism_value[j];
-                    break;
-                }
-            }
-            j++;
-        }
-    }
-
     return egocentrism;
 }
 
@@ -243,7 +225,12 @@ int get_gender(char * str)
     char word[256];
 
     for (i = 0; i < strlen(str); i++) {
-        if (terminating_char(str[i]) == 1) {
+        if ((terminating_char(str[i]) == 1) || (i == strlen(str)-1)) {
+
+            /* final word */
+            if ((i == strlen(str)-1) && (terminating_char(str[i]) != 1))
+                word[ctr++] = tolower(str[i]);
+
             if (ctr > 0) {
                 word[ctr] = 0;
                 if (strlen(word) > 1) {
@@ -271,29 +258,6 @@ int get_gender(char * str)
         else {
             if (ctr < 254)
                 word[ctr++] = tolower(str[i]);
-        }
-    }
-
-    if (ctr > 0) {
-        word[ctr] = 0;
-        if (strlen(word) > 1) {
-            j = 0;
-            while (gender_lang[j] != NULL) {
-                if (strlen(word) == strlen(gender_lang[j])) {
-                    if (strcmp(word, gender_lang[j]) == 0) {
-                        gender += gender_value[j];
-                        break;
-                    }
-                    else {
-                        if (strlen(word) > 2) {
-                            name_gender = get_gender_from_name(word);
-                            if (name_gender == GENDER_FEMININE) gender+=2;
-                            if (name_gender == GENDER_MASCULINE) gender-=2;
-                        }
-                    }
-                }
-                j++;
-            }
         }
     }
 
@@ -376,7 +340,12 @@ int get_triggers(char * str)
     if (retval != -1) return retval;
 
     for (i = 0; i < strlen(str); i++) {
-        if (terminating_char(str[i]) == 1) {
+        if ((terminating_char(str[i]) == 1) || (i == strlen(str)-1)) {
+
+            /* final word */
+            if ((i == strlen(str)-1) && (terminating_char(str[i]) != 1))
+                word[ctr++] = tolower(str[i]);
+
             if (ctr > 0) {
                 word[ctr] = 0;
                 if (strlen(word) > 1) {
@@ -397,22 +366,6 @@ int get_triggers(char * str)
         else {
             if (ctr < 254)
                 word[ctr++] = tolower(str[i]);
-        }
-    }
-
-    if (ctr > 0) {
-        word[ctr] = 0;
-        if (strlen(word) > 1) {
-            j = 0;
-            while (trigger_lang[j] != NULL) {
-                if (strlen(word) == strlen(trigger_lang[j])) {
-                    if (strcmp(word, trigger_lang[j]) == 0) {
-                        trigger++;
-                        break;
-                    }
-                }
-                j++;
-            }
         }
     }
 
