@@ -133,54 +133,15 @@ int terminating_char(char c)
 }
 
 /**
- * @brief Returns a value indicating the valence of the given text
- * @param str The text to be analysed
- * @return Value indicating valence
+ * @brief Matches the given string against an array of words
+ * @param str The text to be matched with
+ * @param words_array Array containing words to be detected within the text
+ * @param word_values Values associated with each matched word
+ * @return Number of matched words
  */
-int get_valence(char * str)
+int match_words(char * str, char * words_array[], int * word_values)
 {
-    int i, j, ctr=0, valence=0;
-    char word[256];
-
-    for (i = 0; i < strlen(str); i++) {
-        if ((terminating_char(str[i]) == 1) || (i == strlen(str)-1)) {
-
-            /* final word */
-            if ((i == strlen(str)-1) && (terminating_char(str[i]) != 1))
-                word[ctr++] = tolower(str[i]);
-
-            if (ctr > 1) {
-                word[ctr] = 0;
-                j = 0;
-                while (sentiment_lang[j] != NULL) {
-                    if (strlen(word) == strlen(sentiment_lang[j])) {
-                        if (strcmp(word, sentiment_lang[j]) == 0) {
-                            valence += sentiment_valence[j];
-                            break;
-                        }
-                    }
-                    j++;
-                }
-            }
-            ctr = 0;
-        }
-        else {
-            if (ctr < 254)
-                word[ctr++] = tolower(str[i]);
-        }
-    }
-
-    return valence;
-}
-
-/**
- * @brief Returns a value indicating egocentrism/extroversion
- * @param str The text to be analysed
- * @return Value indicating egotism/extroversion, with egotism in the positive direction
- */
-int get_egocentrism(char * str)
-{
-    int i, j, ctr=0, egocentrism=0;
+    int i, j, ctr=0, matches=0;
     char word[256];
 
     for (i = 0; i < strlen(str); i++) {
@@ -192,15 +153,20 @@ int get_egocentrism(char * str)
 
             if (ctr > 0) {
                 word[ctr] = 0;
-                j = 0;
-                while (egocentrism_lang[j] != NULL) {
-                    if (strlen(word) == strlen(egocentrism_lang[j])) {
-                        if (strcmp(word, egocentrism_lang[j]) == 0) {
-                            egocentrism += egocentrism_value[j];
-                            break;
+                if (strlen(word) > 1) {
+                    j = 0;
+                    while (words_array[j] != NULL) {
+                        if (strlen(word) == strlen(words_array[j])) {
+                            if (strcmp(word, words_array[j]) == 0) {
+                                if (word_values != NULL)
+                                    matches += word_values[j];
+                                else
+                                    matches++;
+                                break;
+                            }
                         }
+                        j++;
                     }
-                    j++;
                 }
             }
             ctr = 0;
@@ -211,7 +177,27 @@ int get_egocentrism(char * str)
         }
     }
 
-    return egocentrism;
+    return matches;
+}
+
+/**
+ * @brief Returns a value indicating the valence of the given text
+ * @param str The text to be analysed
+ * @return Value indicating valence
+ */
+int get_valence(char * str)
+{
+    return match_words(str, sentiment_lang, sentiment_valence);
+}
+
+/**
+ * @brief Returns a value indicating egocentrism/extroversion
+ * @param str The text to be analysed
+ * @return Value indicating egotism/extroversion, with egotism in the positive direction
+ */
+int get_egocentrism(char * str)
+{
+    return match_words(str, egocentrism_lang, egocentrism_value);
 }
 
 /**
@@ -332,44 +318,11 @@ int read_trigger_words(char * str)
  */
 int get_triggers(char * str)
 {
-    int i, j, ctr=0, trigger=0, retval;
-    char word[256];
-
     /* if custom trigger words exist then read them */
-    retval = read_trigger_words(str);
+    int retval = read_trigger_words(str);
     if (retval != -1) return retval;
 
-    for (i = 0; i < strlen(str); i++) {
-        if ((terminating_char(str[i]) == 1) || (i == strlen(str)-1)) {
-
-            /* final word */
-            if ((i == strlen(str)-1) && (terminating_char(str[i]) != 1))
-                word[ctr++] = tolower(str[i]);
-
-            if (ctr > 0) {
-                word[ctr] = 0;
-                if (strlen(word) > 1) {
-                    j = 0;
-                    while (trigger_lang[j] != NULL) {
-                        if (strlen(word) == strlen(trigger_lang[j])) {
-                            if (strcmp(word, trigger_lang[j]) == 0) {
-                                trigger++;
-                                break;
-                            }
-                        }
-                        j++;
-                    }
-                }
-            }
-            ctr = 0;
-        }
-        else {
-            if (ctr < 254)
-                word[ctr++] = tolower(str[i]);
-        }
-    }
-
-    return trigger;
+    return match_words(str, trigger_lang, NULL);
 }
 
 /**
