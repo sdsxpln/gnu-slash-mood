@@ -1,5 +1,5 @@
 /*
-  Sentiment analysis
+  GNU/Mood: A mood indicator for GNU Social
   Copyright (C) 2017 Bob Mottram
   bob@freedombone.net
 
@@ -21,56 +21,6 @@
 
 /* Note: All words should be in lower case */
 
-/* default trigger words */
-
-char * trigger_word_en[] = {
-    "gnusocial", "mastodon", "stallman", "postactiv", "signal", "linux", "libreboot", "#nsfw",
-    NULL
-};
-
-char * egocentrism_word_en[] = {
-    "i", "me", "my", "myself", "mine", "i'll", "i'd", "i'm",
-    "they", "he", "she", "their", "them", "people", "users", "our", "us", "you", "your", "people's", "we", "we're", "they're", "you're", "he's", "she's", "they'll", "peoples",
-    NULL
-};
-
-static int egocentrism_value[] = {
-    2, 2, 2, 2, 2, 2, 2, 2,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
-};
-
-
-char * gender_word_en[] = {
-    "she", "her", "woman", "female", "feminine",
-    "fem", "mother", "sister", "daughter", "girlfriend",
-    "wife", "aunt", "mrs", "miss", "girl",
-    "girls", "ms", "women", "mothers", "sisters",
-    "women's", "womens", "mother's", "sister's", "lady",
-    "ladies", "lady's",
-    "he", "his", "him", "man", "male",
-    "masculine", "butch", "macho", "father", "brother",
-    "husband", "uncle", "son", "mr", "boy",
-    "boys", "men", "husbands", "fathers", "brothers",
-    "mens", "men's", "husband's", "father's", "brother's",
-    "sir",
-    NULL
-};
-
-static int gender_value[] = {
-    1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1,
-    1, 1,
-    -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1,
-    -1
-};
-
 /*
   Words from AFINN-111 under Open Database License (ODbL) v1.0
   http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010
@@ -87,10 +37,7 @@ static int sentiment_valence[] = {
 };
 
 /* set the language here */
-char ** egocentrism_lang = egocentrism_word_en;
 char ** sentiment_lang = sentiment_word_en;
-char ** gender_lang = gender_word_en;
-char ** trigger_lang = trigger_word_en;
 
 /**
  * @brief Sets the current language
@@ -98,11 +45,6 @@ char ** trigger_lang = trigger_word_en;
  */
 void set_language(char * lang)
 {
-    egocentrism_lang = egocentrism_word_en;
-    sentiment_lang = sentiment_word_en;
-    gender_lang = gender_word_en;
-    trigger_lang = trigger_word_en;
-
     if (strcmp(lang, "de") == 0) {
         /* TODO */
         return;
@@ -120,67 +62,6 @@ void set_language(char * lang)
 }
 
 /**
- * @brief Detects whether the given character is a terminator
- * @param c The character
- * @return Zero if this is not a terminator, 1 otherwise.
- */
-int terminating_char(char c)
-{
-    if ((c == ' ') || (c == ',') ||
-        (c == '.') || (c == ';'))
-        return 1;
-    return 0;
-}
-
-/**
- * @brief Matches the given string against an array of words
- * @param str The text to be matched with
- * @param words_array Array containing words to be detected within the text
- * @param word_values Values associated with each matched word
- * @return Number of matched words
- */
-int match_words(char * str, char * words_array[], int * word_values)
-{
-    int i, j, ctr=0, matches=0;
-    char word[256];
-
-    for (i = 0; i < strlen(str); i++) {
-        if ((terminating_char(str[i]) == 1) || (i == strlen(str)-1)) {
-
-            /* final word */
-            if ((i == strlen(str)-1) && (terminating_char(str[i]) != 1))
-                word[ctr++] = tolower(str[i]);
-
-            if (ctr > 0) {
-                word[ctr] = 0;
-                if (strlen(word) > 1) {
-                    j = 0;
-                    while (words_array[j] != NULL) {
-                        if (strlen(word) == strlen(words_array[j])) {
-                            if (strcmp(word, words_array[j]) == 0) {
-                                if (word_values != NULL)
-                                    matches += word_values[j];
-                                else
-                                    matches++;
-                                break;
-                            }
-                        }
-                        j++;
-                    }
-                }
-            }
-            ctr = 0;
-        }
-        else {
-            if (ctr < 254)
-                word[ctr++] = tolower(str[i]);
-        }
-    }
-
-    return matches;
-}
-
-/**
  * @brief Returns a value indicating the valence of the given text
  * @param str The text to be analysed
  * @return Value indicating valence
@@ -188,141 +69,6 @@ int match_words(char * str, char * words_array[], int * word_values)
 int get_valence(char * str)
 {
     return match_words(str, sentiment_lang, sentiment_valence);
-}
-
-/**
- * @brief Returns a value indicating egocentrism/extroversion
- * @param str The text to be analysed
- * @return Value indicating egotism/extroversion, with egotism in the positive direction
- */
-int get_egocentrism(char * str)
-{
-    return match_words(str, egocentrism_lang, egocentrism_value);
-}
-
-/**
- * @brief Returns a value indicating the masculine/feminine content of the given text
- * @param str The text to be analysed
- * @return Value indicating masuline/feminine, with feminine in the positive direction
- */
-int get_gender(char * str)
-{
-    int i, j, ctr=0, gender=0, name_gender;
-    char word[256];
-
-    for (i = 0; i < strlen(str); i++) {
-        if ((terminating_char(str[i]) == 1) || (i == strlen(str)-1)) {
-
-            /* final word */
-            if ((i == strlen(str)-1) && (terminating_char(str[i]) != 1))
-                word[ctr++] = tolower(str[i]);
-
-            if (ctr > 0) {
-                word[ctr] = 0;
-                if (strlen(word) > 1) {
-                    j = 0;
-                    while (gender_lang[j] != NULL) {
-                        if (strlen(word) == strlen(gender_lang[j])) {
-                            if (strcmp(word, gender_lang[j]) == 0) {
-                                gender += gender_value[j];
-                                break;
-                            }
-                            else {
-                                if (strlen(word) > 2) {
-                                    name_gender = get_gender_from_name(word);
-                                    if (name_gender == GENDER_FEMININE) gender+=2;
-                                    if (name_gender == GENDER_MASCULINE) gender-=2;
-                                }
-                            }
-                        }
-                        j++;
-                    }
-                }
-            }
-            ctr = 0;
-        }
-        else {
-            if (ctr < 254)
-                word[ctr++] = tolower(str[i]);
-        }
-    }
-
-    return gender;
-}
-
-/**
- * @brief Reads triggers from a custom file /var/lib/gnu-slash-mood/triggers.txt
- * @param str The text to be analysed
- * @return Zero or greater trigger word detections, -1 if the file doesn't exist
- */
-int read_trigger_words(char * str)
-{
-    FILE * fp;
-    char linestr[256], custom_trigger_word[256], word[256];
-    int i, j, ctr=0, trigger=0;
-
-    fp = fopen("/var/lib/gnu-slash-mood/triggers.txt", "r");
-    if (!fp) return -1;
-
-    while (!feof(fp)) {
-        if (fgets(linestr , 254 , fp) != NULL ) {
-            if (strlen(linestr) == 0) continue;
-
-            /* extract the trigger word */
-            j = 0;
-            for (i = 0; i < strlen(linestr); i++)
-                if ((linestr[i] != 10) && (linestr[i] != 13) &&
-                    (linestr[i] != ' ') && (linestr[i] != ','))
-                    custom_trigger_word[j++] = tolower(linestr[i]);
-
-            /* string terminator */
-            custom_trigger_word[j] = 0;
-
-            /* is the trigger word within the text? */
-            ctr = 0;
-            for (i = 0; i < strlen(str); i++) {
-                if ((terminating_char(str[i]) == 1) || (i == strlen(str)-1)) {
-                    if (i == strlen(str)-1)
-                        word[ctr++] = tolower(str[i]);
-                    if (ctr > 0) {
-                        /* string terminator */
-                        word[ctr] = 0;
-                        if (strlen(word) > 1) {
-                            if (strlen(word) == strlen(custom_trigger_word)) {
-                                if (strcmp(word, custom_trigger_word) == 0) {
-                                    trigger++;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    ctr = 0;
-                }
-                else {
-                    if (ctr < 254)
-                        word[ctr++] = tolower(str[i]);
-                }
-            }
-
-        }
-    }
-
-    fclose(fp);
-    return trigger;
-}
-
-/**
- * @brief Returns the number of trigger words found
- * @param str The text to be analysed
- * @return Number of matching trigger words
- */
-int get_triggers(char * str)
-{
-    /* if custom trigger words exist then read them */
-    int retval = read_trigger_words(str);
-    if (retval != -1) return retval;
-
-    return match_words(str, trigger_lang, NULL);
 }
 
 /**

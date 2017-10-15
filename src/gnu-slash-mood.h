@@ -1,5 +1,5 @@
 /*
-    Mood indicator
+    GNU/Mood: A mood indicator for GNU Social
     Copyright (C) 2017 Bob Mottram
     bob@freedombone.net
 
@@ -33,9 +33,12 @@ enum {
 };
 
 void set_language(char * lang);
+int terminating_char(char c);
+int match_words(char * str, char * words_array[], int * word_values);
 int get_valence(char * str);
 int get_egocentrism(char * str);
 int get_gender(char * str);
+int get_triggers(char * str);
 void sentiment_to_rgb(char * str, int * r, int * g, int * b, int * frequency);
 int get_gender_from_name(char * ch);
 

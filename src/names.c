@@ -1,5 +1,5 @@
 /*
-  Detection of gendered names
+  GNU/Mood: A mood indicator for GNU Social
   Copyright (C) 2017 Bob Mottram
   bob@freedombone.net
 
